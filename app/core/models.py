@@ -62,3 +62,18 @@ class Ingredient(models.Model):
 
     class Meta:
         unique_together = ('name', 'user',)
+
+
+class Recipe(models.Model):
+    """Recipe obj"""
+    user = models.ForeignKey(settings.AUTH_USER_MODEL,
+                             on_delete=models.CASCADE)
+    title = models.CharField(max_length=255)
+    time_minutes = models.IntegerField()
+    price = models.DecimalField(max_digits=5, decimal_places=2)
+    link = models.CharField(max_length=255, blank=True)
+    ingredients = models.ManyToManyField('Ingredient')
+    tag = models.ManyToManyField('Tag')
+
+    def __str__(self):
+        return self.title
