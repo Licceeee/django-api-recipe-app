@@ -1,8 +1,8 @@
-from django.contrib import admin
-from django.contrib.auth.admin import UserAdmin as BaseUserAdmin
-from django.utils.translation import gettext as _
+from django.contrib import admin  # noqa
+from django.contrib.auth.admin import UserAdmin as BaseUserAdmin  # noqa
+from django.utils.translation import gettext as _  # noqa
 
-from core.models import (User, Tag, Ingredient, Recipe)
+from core.models import (User, Tag, Ingredient, Recipe)  # noqa
 
 
 @admin.register(User)

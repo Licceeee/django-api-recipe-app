@@ -1,13 +1,13 @@
-from django.contrib.auth import get_user_model
-from django.urls import reverse
-from django.test import TestCase
+from django.contrib.auth import get_user_model  # noqa
+from django.urls import reverse  # noqa
+from django.test import TestCase  # noqa
 
-from rest_framework import status
-from rest_framework.test import APIClient
+from rest_framework import status  # noqa
+from rest_framework.test import APIClient  # noqa
 
-from core.models import Tag
+from core.models import Tag  # noqa
 
-from recipe.serializers import TagSerializer
+from recipe.serializers import TagSerializer  # noqa
 
 
 TAGS_URL = reverse('recipe:tag-list')

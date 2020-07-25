@@ -1,11 +1,12 @@
-from django.urls import path, include
-from rest_framework.routers import DefaultRouter
+from django.urls import path, include  # noqa
+from rest_framework.routers import DefaultRouter  # noqa
 
-from recipe import views
+from recipe import views  # noqa
 
 router = DefaultRouter()
 router.register('tags', views.TagViewSet)
 router.register('ingredients', views.IngredientViewSet)
+router.register('recipies', views.RecipeViewSet)
 
 app_name = 'recipe'
 
