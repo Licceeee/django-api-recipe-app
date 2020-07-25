@@ -1,6 +1,6 @@
-from rest_framework import serializers
+from rest_framework import serializers  # noqa
 
-from core.models import Tag, Ingredient, Recipe
+from core.models import Tag, Ingredient, Recipe  # noqa
 
 
 class TagSerializer(serializers.HyperlinkedModelSerializer):

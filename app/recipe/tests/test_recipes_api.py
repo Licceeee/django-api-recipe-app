@@ -105,3 +105,69 @@ class PrivateRecipesApiTests(TestCase):
 
         serializer = RecipeDetailSerializer(recipe)
         self.assertEqual(res.data, serializer.data)
+
+    def test_create_basic_recipe(self):
+        """test creating recipe"""
+        payload = {
+            'title': 'Strawberry cake',
+            'time_minutes': 35,
+            'price': 5.00,
+        }
+        res = self.client.post(RECIPES_URL, payload)
+
+        self.assertEqual(res.status_code, status.HTTP_201_CREATED)
+        recipe = Recipe.objects.get(id=res.data['id'])
+        for key in payload.keys():
+            self.assertEqual(payload[key], getattr(recipe, key))
+
+    def test_create_recipe_with_tags(self):
+        """test creating recipe with tags"""
+        tag1 = sample_tag(user=self.user)
+        tag2 = sample_tag(user=self.user, name='Dessert')
+        payload = {
+            'title': 'Strawberry cake',
+            'time_minutes': 40,
+            'price': 5.00,
+            'tags': [tag1.id, tag2.id],
+        }
+
+        res = self.client.post(RECIPES_URL, payload)
+
+        # create recipe
+        self.assertEqual(res.status_code, status.HTTP_201_CREATED)
+        # retrieve created recipe
+        recipe = Recipe.objects.get(id=res.data['id'])
+        # retrieve created tags
+        tags = recipe.tags.all()
+        # check that 3 created tags == 2 (tag1, tag2)
+        self.assertEqual(tags.count(), 2)
+        # check if tags created in sample tags r the same as in the queryset
+        self.assertIn(tag1, tags)
+        self.assertIn(tag2, tags)
+
+    def test_create_recipe_with_ingredients(self):
+        """test creating recipe with ingredients"""
+        ingredient1 = sample_ingredient(user=self.user, name='Strawberry')
+        ingredient2 = sample_ingredient(user=self.user, name='Butter')
+        ingredient3 = sample_ingredient(user=self.user, name='Milk')
+        payload = {
+            'title': 'Strawberry cake',
+            'time_minutes': 40,
+            'price': 5.00,
+            'ingredients': [ingredient1.id, ingredient2.id, ingredient3.id],
+        }
+
+        res = self.client.post(RECIPES_URL, payload)
+
+        # create recipe
+        self.assertEqual(res.status_code, status.HTTP_201_CREATED)
+        # retrieve created recipe
+        recipe = Recipe.objects.get(id=res.data['id'])
+        # retrieve created tags
+        ingredients = recipe.ingredients.all()
+        # check that 3 created tags == 2 (tag1, tag2)
+        self.assertEqual(ingredients.count(), 3)
+        # check if tags created in sample tags r the same as in the queryset
+        self.assertIn(ingredient1, ingredients)
+        self.assertIn(ingredient2, ingredients)
+        self.assertIn(ingredient3, ingredients)
