@@ -5,12 +5,27 @@ from django.test import TestCase  # noqa
 from rest_framework import status  # noqa
 from rest_framework.test import APIClient  # noqa
 
-from core.models import Recipe  # noqa
+from core.models import Recipe, Tag, Ingredient  # noqa
 
-from recipe.serializers import RecipeSerializer  # noqa
+from recipe.serializers import RecipeSerializer, RecipeDetailSerializer  # noqa
 
 
 RECIPES_URL = reverse('recipe:recipe-list')
+
+
+def detail_url(recipe_id):
+    """return recipe detail url"""
+    return reverse('recipe:recipe-detail', args=[recipe_id])
+
+
+def sample_tag(user, name='Vegan'):
+    """create & return sample tag"""
+    return Tag.objects.create(user=user, name=name)
+
+
+def sample_ingredient(user, name='Chia'):
+    """create & return sample tag"""
+    return Ingredient.objects.create(user=user, name=name)
 
 
 def sample_recipe(user, **params):
@@ -79,22 +94,14 @@ class PrivateRecipesApiTests(TestCase):
         self.assertEqual(len(res.data), 1)
         self.assertEqual(res.data, serializer.data)
 
-    '''
-    def test_create_recipe_successful(self):
-        """Test creating a new recipe"""
-        payload = {'name': 'Test Recipe'}
-        self.client.post(RECIPES_URL, payload)
+    def test_view_recipe_detail(self):
+        """test viewing a recipe detail"""
+        recipe = sample_recipe(user=self.user)
+        recipe.tags.add(sample_tag(user=self.user))
+        recipe.ingredients.add(sample_ingredient(user=self.user))
 
-        exists = Recipe.objects.filter(
-            user=self.user, name=payload['name']
-        ).exists()
+        url = detail_url(recipe.id)
+        res = self.client.get(url)
 
-        self.assertTrue(exists)
-
-    def test_recipe_invalid_name(self):
-        """test creating new recipe with invalid payload"""
-        payload = {'name': ''}
-        res = self.client.post(RECIPES_URL, payload)
-
-        self.assertEqual(res.status_code, status.HTTP_400_BAD_REQUEST)
-    '''
+        serializer = RecipeDetailSerializer(recipe)
+        self.assertEqual(res.data, serializer.data)
