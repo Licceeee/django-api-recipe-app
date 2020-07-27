@@ -1,5 +1,5 @@
-from rest_framework.decorators import action
-from rest_framework.response import Response
+from rest_framework.decorators import action  # noqa
+from rest_framework.response import Response  # noqa
 from rest_framework import viewsets, mixins, status  # noqa
 from rest_framework.authentication import TokenAuthentication  # noqa
 from rest_framework.permissions import IsAuthenticated  # noqa
@@ -17,7 +17,15 @@ class BaseAttrViewSet(viewsets.GenericViewSet, mixins.ListModelMixin,
 
     def get_queryset(self):
         """return objs for the current authenticated user only"""
-        return self.queryset.filter(user=self.request.user).order_by('-name')
+        assigned_only = bool(
+            int(self.request.query_params.get('assigned_only', 0))
+        )
+        queryset = self.queryset
+        if assigned_only:
+            queryset = queryset.filter(recipe__isnull=False)
+
+        return queryset.filter(
+            user=self.request.user).order_by('-name').distinct()
 
     def perform_create(self, serializer):
         """Create a new obj"""
